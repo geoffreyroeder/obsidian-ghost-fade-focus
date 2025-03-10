@@ -18,6 +18,38 @@ export function isEmptyLine(text: string): boolean {
   return text.trim() === "";
 }
 
+// Helper function for calculating effective distances - exported for testing
+export function calculateEffectiveDistances(
+  lines: string[], 
+  cursorLineIndex: number
+): Map<number, number> {
+  const nonEmptyLines = new Map<number, number>();
+  let effectiveDistanceUp = 0;
+  let effectiveDistanceDown = 0;
+  
+  // Scan lines and calculate effective distances
+  for (let i = 0; i < lines.length; i++) {
+    const isEmpty = isEmptyLine(lines[i]);
+    
+    if (!isEmpty) {
+      if (i < cursorLineIndex) {
+        // Count up from bottom to cursor
+        nonEmptyLines.set(i, effectiveDistanceUp);
+        effectiveDistanceUp++;
+      } else if (i > cursorLineIndex) {
+        // Count down from cursor to bottom
+        effectiveDistanceDown++;
+        nonEmptyLines.set(i, effectiveDistanceDown);
+      } else {
+        // This is the cursor line
+        nonEmptyLines.set(i, 0);
+      }
+    }
+  }
+  
+  return nonEmptyLines;
+}
+
 export default class GhostFocusPlugin extends Plugin {
   settings: GhostFocusSettings;
   rootElement: HTMLElement;
@@ -135,35 +167,26 @@ export default class GhostFocusPlugin extends Plugin {
       const cursorPos = view.state.selection.main.head;
       const cursorPosLine = view.state.doc.lineAt(cursorPos).number;
 
-      // First pass: Identify non-empty lines and calculate effective distances
-      const nonEmptyLines = new Map<number, number>();
-      let effectiveDistanceUp = 0;
-      let effectiveDistanceDown = 0;
+      // Extract visible lines for processing
+      const visibleLines: string[] = [];
+      const lineNumbers: number[] = [];
       
-      // Scan visible lines and calculate effective distances that ignore empty lines
+      // First collect all visible lines
       for (let { from, to } of view.visibleRanges) {
         for (let pos = from; pos <= to; ) {
           let line = view.state.doc.lineAt(pos);
-          const isEmpty = isEmptyLine(line.text);
-          
-          if (!isEmpty) {
-            if (line.number < cursorPosLine) {
-              // Count up from bottom to cursor
-              nonEmptyLines.set(line.number, effectiveDistanceUp);
-              effectiveDistanceUp++;
-            } else if (line.number > cursorPosLine) {
-              // Count down from cursor to bottom
-              effectiveDistanceDown++;
-              nonEmptyLines.set(line.number, effectiveDistanceDown);
-            } else {
-              // This is the cursor line
-              nonEmptyLines.set(line.number, 0);
-            }
-          }
+          visibleLines.push(line.text);
+          lineNumbers.push(line.number);
           pos = line.to + 1;
         }
       }
-
+      
+      // Find the index of the cursor line in our array
+      const cursorIndex = lineNumbers.indexOf(cursorPosLine);
+      
+      // Calculate effective distances using our helper function
+      const nonEmptyLines = calculateEffectiveDistances(visibleLines, cursorIndex);
+      
       // Second pass: Apply decorations based on the effective distances
       let builder = new RangeSetBuilder<Decoration>();
       for (let { from, to } of view.visibleRanges) {
@@ -172,7 +195,9 @@ export default class GhostFocusPlugin extends Plugin {
           const isEmpty = isEmptyLine(line.text);
           
           if (!isEmpty) {
-            const effectiveDistance = nonEmptyLines.get(line.number) || 0;
+            // Find the index of this line in our array
+            const lineIndex = lineNumbers.indexOf(line.number);
+            const effectiveDistance = nonEmptyLines.get(lineIndex) || 0;
             
             if (effectiveDistance <= 5) {
               builder.add(

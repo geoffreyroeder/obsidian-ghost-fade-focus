@@ -10,11 +10,11 @@
 - [x] Implement unit tests for settings functionality
 - [x] Implement unit tests for decoration logic
 - [x] Debug and fix issues with decoration logic tests
+- [x] Implement improved empty line handling in decoration logic
+- [x] Verify empty lines are properly ignored in distance calculations
+- [x] Add tests for edge cases with empty lines
 
 ## In Progress
-- [ ] Implement improved empty line handling in decoration logic
-- [ ] Verify empty lines are properly ignored in distance calculations
-- [ ] Add tests for edge cases with empty lines
 - [ ] Add more comprehensive tests for edge cases
 - [ ] Verify all tests pass consistently
 - [ ] Document testing approach for future reference

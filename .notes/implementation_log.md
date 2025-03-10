@@ -9,4 +9,7 @@
 - 2024-03-10 17:30: Implemented settings tests - Created tests for plugin settings [File: src/test/settings.test.ts]
 - 2024-03-10 17:40: Implemented decoration logic tests - Created tests for distance calculation [File: src/test/decoration-logic.test.ts]
 - 2024-03-10 17:50: Fixed decoration logic tests - Aligned test implementation with actual plugin behavior [File: src/test/decoration-logic.test.ts]
-- 2024-03-10 19:00: Planned empty line handling improvement - Designed algorithm for properly ignoring empty lines in distance calculations [File: src/main.ts] 
+- 2024-03-10 19:00: Planned empty line handling improvement - Designed algorithm for properly ignoring empty lines in distance calculations [File: src/main.ts]
+- 2024-03-10 19:30: Implemented empty line handling - Created calculateEffectiveDistances helper function and refactored fadedLineDeco to use it [File: src/main.ts]
+- 2024-03-10 19:25: Added tests for empty line handling - Created comprehensive tests for the calculateEffectiveDistances function [File: src/test/empty-line-handling.test.ts] 
+- 2024-03-10 19:35: Created TIL document - Documented key insights from implementing empty line handling [File: .notes/til.md]
