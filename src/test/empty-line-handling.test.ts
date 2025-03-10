@@ -2,7 +2,7 @@
  * Tests for empty line handling in decoration logic
  */
 
-import { isEmptyLine, calculateEffectiveDistances } from '../main';
+import { isEmptyLine, calculateEffectiveDistances } from '../utils';
 
 describe('Empty Line Handling', () => {
   describe('calculateEffectiveDistances', () => {

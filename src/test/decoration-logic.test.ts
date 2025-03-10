@@ -2,7 +2,7 @@
  * Tests for the decoration logic that ignores empty lines
  */
 
-import { isEmptyLine } from '../main';
+import { isEmptyLine } from '../utils';
 
 // Implementation that directly mirrors the actual algorithm in main.ts
 function calculateEffectiveDistance(lines: string[], cursorLine: number): Map<number, number> {

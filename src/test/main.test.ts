@@ -1,4 +1,4 @@
-import { isEmptyLine } from "../main";
+import { isEmptyLine } from "../utils";
 
 // Mock any dependencies if needed
 jest.mock("obsidian");
