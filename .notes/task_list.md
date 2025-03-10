@@ -1,6 +1,10 @@
 # Task List
 
 ## Completed
+- [x] Fix inconsistency in distance calculation for lines above the cursor
+- [x] Update test expectations to match the correct implementation
+- [x] Integrate improved distance calculation into main plugin
+- [x] Verify consistent empty line handling throughout the codebase
 - [x] Set up proper Jest testing environment for Obsidian plugin
 - [x] Create mocks for Obsidian API
 - [x] Create mocks for CodeMirror API
@@ -15,11 +19,14 @@
 - [x] Add tests for edge cases with empty lines
 
 ## In Progress
-- [ ] Add more comprehensive tests for edge cases
+- [ ] Add comprehensive tests for cursor movement edge cases
+- [ ] Verify behavior with real-world documents in Obsidian
+- [ ] Consider adding a debug mode for diagnostics
 - [ ] Verify all tests pass consistently
 - [ ] Document testing approach for future reference
 
 ## Backlog
+- [ ] Monitor performance with large documents
 - [ ] Set up continuous integration for automated testing
 - [ ] Add integration tests with simulated user interactions
 - [ ] Improve test coverage for plugin class methods

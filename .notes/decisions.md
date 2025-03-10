@@ -43,4 +43,27 @@ Implement improved empty line handling in the decoration logic to create a more 
 - More intuitive visual experience as fading applies consistently to content
 - Two paragraphs separated by multiple empty lines will have consecutive distance values
 - Edge cases like documents with only empty lines or cursor on empty line handled gracefully
-- Minimal performance impact as line content is already being processed 
+- Minimal performance impact as line content is already being processed
+
+## 2024-03-10: Fixing Distance Calculation for Lines Above Cursor
+
+### Decision
+Revised the `calculateEffectiveDistances` function to properly handle distance calculation for lines above the cursor, ensuring consistent behavior with lines below the cursor.
+
+### Rationale
+- The previous implementation had inconsistent behavior for lines above vs. below the cursor
+- Lines above the cursor were not being assigned distances in a way that matched the expected fading effect
+- Test expectations and implementation were misaligned, causing confusion about the correct behavior
+
+### Implementation Details
+- Completely rewrote the `calculateEffectiveDistances` function in `utils.ts`
+- First collect all non-empty lines above and below the cursor separately
+- For lines above: assign distances starting from 1 for the closest line to the cursor, increasing for lines further away
+- For lines below: maintain the same approach of distance 1 for closest, increasing for lines further away
+- Integrated this improved function into `main.ts` to ensure consistent behavior throughout the plugin
+
+### Consequences
+- Distance calculation is now consistent for lines both above and below the cursor
+- Empty lines are properly skipped in all distance calculations
+- The fading effect provides a more intuitive experience when navigating through documents
+- Tests now correctly verify the expected behavior 

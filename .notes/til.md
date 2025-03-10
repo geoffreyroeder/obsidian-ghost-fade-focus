@@ -34,4 +34,22 @@ The decoration system in CodeMirror is powerful but requires understanding sever
 
 4. **Visible Ranges**: CodeMirror's `view.visibleRanges` gives you access to what's currently visible, which is crucial for performance in large documents.
 
-These insights will be valuable for future features that need to analyze and modify text presentation based on content semantics. 
+These insights will be valuable for future features that need to analyze and modify text presentation based on content semantics.
+
+## 2024-03-10: Consistent Distance Calculation in Text Editors
+
+### Importance of Consistent Algorithms for UI Effects
+
+When implementing visual effects that depend on spatial relationships in text editors, consistency is crucial for user experience. Today I learned:
+
+1. **Bidirectional Consistency**: When calculating distances from a reference point (like a cursor), the algorithm must be consistent in both directions (above and below). Different logic for different directions creates a jarring user experience.
+
+2. **Test-Implementation Alignment**: Test expectations should accurately reflect the desired behavior. When there's a mismatch, carefully analyze whether the tests or the implementation needs to change.
+
+3. **Modular Refactoring**: Extracting core algorithms into separate, well-tested functions improves maintainability and makes it easier to ensure consistent behavior throughout the codebase.
+
+4. **Edge Case Handling**: When dealing with spatial relationships in text, edge cases like document boundaries, empty content, and cursor positioning require special attention.
+
+5. **Visual Verification**: Automated tests are essential, but visual verification in the actual application is equally important for effects that impact user experience.
+
+These insights will be valuable for future features that need to provide consistent visual feedback based on spatial relationships in text. 

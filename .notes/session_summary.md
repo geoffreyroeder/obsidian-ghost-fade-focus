@@ -78,3 +78,31 @@
 1. Continue improving test coverage for edge cases
 2. Verify the visual behavior in the actual plugin
 3. Consider adding performance tests for large documents 
+
+## 2024-03-10: Fixing Empty Line Handling for Lines Above Cursor
+
+### Accomplishments
+- Identified and fixed inconsistency in distance calculation for lines above the cursor
+- Completely rewrote the `calculateEffectiveDistances` function in `utils.ts` to ensure consistent behavior
+- Updated test expectations in `empty-line-handling.test.ts` to match the correct implementation
+- Integrated the improved distance calculation into `main.ts`
+- Verified that empty lines are properly skipped in all distance calculations
+
+### Challenges Encountered
+1. **Inconsistent Implementation**
+   - The original implementation had different logic for lines above vs. below the cursor
+   - Test expectations didn't match the actual desired behavior
+   
+2. **Test Alignment**
+   - Had to carefully analyze test expectations to determine if tests or implementation needed fixing
+   - Discovered that the "should handle cursor at last line" test had incorrect expectations
+
+3. **Integration with Main Plugin**
+   - Needed to ensure the improved function was properly integrated into the main plugin
+   - Verified that the implementation correctly handles all edge cases
+
+### Next Steps
+1. Add more comprehensive tests for cursor movement edge cases
+2. Verify the behavior with real-world documents in Obsidian
+3. Consider adding a debug mode to help diagnose any remaining issues
+4. Monitor performance with large documents 

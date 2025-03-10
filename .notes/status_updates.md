@@ -1,5 +1,27 @@
 # Status Updates
 
+## Week of 2024-03-10 (Update 4)
+
+### Current Status
+The project has successfully fixed the inconsistency in empty line handling for lines above the cursor. We've completely rewritten the `calculateEffectiveDistances` function to ensure consistent behavior for lines both above and below the cursor, and integrated this improved function into the main plugin.
+
+### Key Accomplishments
+- Fixed inconsistency in distance calculation for lines above the cursor
+- Updated test expectations to match the correct implementation
+- Integrated the improved distance calculation into the main plugin
+- Verified consistent empty line handling throughout the codebase
+
+### Challenges & Solutions
+- **Implementation Inconsistency**: Identified and fixed different logic for lines above vs. below the cursor
+- **Test Alignment**: Carefully analyzed test expectations to determine if tests or implementation needed fixing
+- **Integration**: Ensured the improved function was properly integrated into the main plugin
+
+### Next Steps
+- Add more comprehensive tests for cursor movement edge cases
+- Verify the behavior with real-world documents in Obsidian
+- Consider adding a debug mode to help diagnose any remaining issues
+- Monitor performance with large documents
+
 ## Week of 2024-03-10 (Update 3)
 
 ### Current Status
