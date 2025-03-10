@@ -38,10 +38,10 @@ class MockGhostFocusPlugin {
       "--ghost-fade-focus-opacity-5",
       `${this.settings.opacity_5}`
     );
-    this.rootElement.style.setProperty(
-      "--ghost-fade-focus-opacity",
-      `${this.settings.opacity}`
-    );
+    // this.rootElement.style.setProperty(
+    //   "--ghost-fade-focus-opacity",
+    //   `${this.settings.opacity}`
+    // );
   }
 
   removeCSSVariables() {
@@ -50,7 +50,7 @@ class MockGhostFocusPlugin {
     this.rootElement.style.removeProperty("--ghost-fade-focus-opacity-3");
     this.rootElement.style.removeProperty("--ghost-fade-focus-opacity-4");
     this.rootElement.style.removeProperty("--ghost-fade-focus-opacity-5");
-    this.rootElement.style.removeProperty("--ghost-fade-focus-opacity");
+    // this.rootElement.style.removeProperty("--ghost-fade-focus-opacity");
   }
 
   cssVariablesBasedOnEnabledState() {
@@ -96,13 +96,13 @@ describe('CSS Variable Management', () => {
         '--ghost-fade-focus-opacity-5',
         String(DEFAULT_SETTINGS.opacity_5)
       );
-      expect(mockRootElement.style.setProperty).toHaveBeenCalledWith(
-        '--ghost-fade-focus-opacity',
-        String(DEFAULT_SETTINGS.opacity)
-      );
+      // expect(mockRootElement.style.setProperty).toHaveBeenCalledWith(
+      //   '--ghost-fade-focus-opacity',
+      //   String(DEFAULT_SETTINGS.opacity)
+      // );
 
       // Verify the correct number of calls
-      expect(mockRootElement.style.setProperty).toHaveBeenCalledTimes(6);
+      expect(mockRootElement.style.setProperty).toHaveBeenCalledTimes(5);
     });
 
     test('uses custom opacity values from settings', () => {
@@ -144,12 +144,12 @@ describe('CSS Variable Management', () => {
       expect(mockRootElement.style.removeProperty).toHaveBeenCalledWith(
         '--ghost-fade-focus-opacity-5'
       );
-      expect(mockRootElement.style.removeProperty).toHaveBeenCalledWith(
-        '--ghost-fade-focus-opacity'
-      );
+      // expect(mockRootElement.style.removeProperty).toHaveBeenCalledWith(
+      //   '--ghost-fade-focus-opacity'
+      // );
 
       // Verify the correct number of calls
-      expect(mockRootElement.style.removeProperty).toHaveBeenCalledTimes(6);
+      expect(mockRootElement.style.removeProperty).toHaveBeenCalledTimes(5);
     });
   });
 

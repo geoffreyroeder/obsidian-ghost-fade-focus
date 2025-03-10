@@ -9,27 +9,42 @@ export function calculateEffectiveDistances(
   cursorLineIndex: number
 ): Map<number, number> {
   const nonEmptyLines = new Map<number, number>();
-  let effectiveDistanceUp = 0;
-  let effectiveDistanceDown = 0;
   
-  // Scan lines and calculate effective distances
-  for (let i = 0; i < lines.length; i++) {
-    const isEmpty = isEmptyLine(lines[i]);
-    
-    if (!isEmpty) {
-      if (i < cursorLineIndex) {
-        // Count up from bottom to cursor
-        nonEmptyLines.set(i, effectiveDistanceUp);
-        effectiveDistanceUp++;
-      } else if (i > cursorLineIndex) {
-        // Count down from cursor to bottom
-        effectiveDistanceDown++;
-        nonEmptyLines.set(i, effectiveDistanceDown);
-      } else {
-        // This is the cursor line
-        nonEmptyLines.set(i, 0);
-      }
+  // First collect all non-empty lines above cursor
+  const nonEmptyIndicesAbove: number[] = [];
+  for (let i = 0; i < cursorLineIndex; i++) {
+    if (!isEmptyLine(lines[i])) {
+      nonEmptyIndicesAbove.push(i);
     }
+  }
+  
+  // Assign distances to lines above cursor
+  // Line closest to cursor gets distance 1, next gets 2, etc.
+  for (let i = nonEmptyIndicesAbove.length - 1; i >= 0; i--) {
+    const lineIndex = nonEmptyIndicesAbove[i];
+    const distance = nonEmptyIndicesAbove.length - i;
+    nonEmptyLines.set(lineIndex, distance);
+  }
+  
+  // Set cursor line distance to 0
+  if (!isEmptyLine(lines[cursorLineIndex])) {
+    nonEmptyLines.set(cursorLineIndex, 0);
+  }
+  
+  // Collect all non-empty lines below cursor
+  const nonEmptyIndicesBelow: number[] = [];
+  for (let i = cursorLineIndex + 1; i < lines.length; i++) {
+    if (!isEmptyLine(lines[i])) {
+      nonEmptyIndicesBelow.push(i);
+    }
+  }
+  
+  // Assign distances to lines below cursor
+  // Line closest to cursor gets distance 1, next gets 2, etc.
+  for (let i = 0; i < nonEmptyIndicesBelow.length; i++) {
+    const lineIndex = nonEmptyIndicesBelow[i];
+    const distance = i + 1;
+    nonEmptyLines.set(lineIndex, distance);
   }
   
   return nonEmptyLines;

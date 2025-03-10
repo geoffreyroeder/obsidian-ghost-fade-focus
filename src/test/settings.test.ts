@@ -14,7 +14,8 @@ class MockGhostFocusPlugin {
     opacity_3: DEFAULT_SETTINGS.opacity_3 ?? 0.55,
     opacity_4: DEFAULT_SETTINGS.opacity_4 ?? 0.4,
     opacity_5: DEFAULT_SETTINGS.opacity_5 ?? 0.25,
-    opacity: DEFAULT_SETTINGS.opacity ?? 0.1
+    opacity: DEFAULT_SETTINGS.opacity ?? 0.1,
+    debugMode: DEFAULT_SETTINGS.debugMode ?? false
   };
   savedData: any = null;
   
@@ -63,6 +64,7 @@ describe('Plugin Settings', () => {
       expect(plugin.settings.opacity_4).toBe(DEFAULT_SETTINGS.opacity_4);
       expect(plugin.settings.opacity_5).toBe(DEFAULT_SETTINGS.opacity_5);
       expect(plugin.settings.opacity).toBe(DEFAULT_SETTINGS.opacity);
+      expect(plugin.settings.debugMode).toBe(DEFAULT_SETTINGS.debugMode);
     });
     
     test('merges saved data with default settings', async () => {
@@ -82,6 +84,7 @@ describe('Plugin Settings', () => {
       expect(plugin.settings.opacity_4).toBe(DEFAULT_SETTINGS.opacity_4);
       expect(plugin.settings.opacity_5).toBe(DEFAULT_SETTINGS.opacity_5);
       expect(plugin.settings.opacity).toBe(DEFAULT_SETTINGS.opacity);
+      expect(plugin.settings.debugMode).toBe(DEFAULT_SETTINGS.debugMode);
     });
   });
   
@@ -102,6 +105,7 @@ describe('Plugin Settings', () => {
       expect(plugin.savedData.opacity_4).toBe(DEFAULT_SETTINGS.opacity_4);
       expect(plugin.savedData.opacity_5).toBe(DEFAULT_SETTINGS.opacity_5);
       expect(plugin.savedData.opacity).toBe(0.05);
+      expect(plugin.savedData.debugMode).toBe(false);
     });
   });
   
@@ -114,6 +118,7 @@ describe('Plugin Settings', () => {
       expect(DEFAULT_SETTINGS.opacity_4).toBe(0.4);
       expect(DEFAULT_SETTINGS.opacity_5).toBe(0.25);
       expect(DEFAULT_SETTINGS.opacity).toBe(0.1);
+      expect(DEFAULT_SETTINGS.debugMode).toBe(false);
     });
   });
 }); 

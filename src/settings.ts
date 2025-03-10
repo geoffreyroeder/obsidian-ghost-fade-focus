@@ -9,6 +9,7 @@ export interface GhostFocusSettings {
   opacity_4: number;
   opacity_5: number;
   opacity: number;
+  debugMode: boolean;
 }
 
 export const DEFAULT_SETTINGS: Partial<GhostFocusSettings> = {
@@ -19,6 +20,7 @@ export const DEFAULT_SETTINGS: Partial<GhostFocusSettings> = {
   opacity_4: 0.4,
   opacity_5: 0.25,
   opacity: 0.1,
+  debugMode: false // Set default to false
 };
 
 export class GhostFocusSettingTab extends PluginSettingTab {
@@ -205,5 +207,17 @@ export class GhostFocusSettingTab extends PluginSettingTab {
         el.style.textAlign = "right";
         el.innerText = " " + this.plugin.settings.opacity.toString();
       });
+          // Add the debug mode toggle
+    new Setting(containerEl)
+      .setName("Debug Mode")
+      .setDesc("Enable detailed logging to the console for debugging purposes")
+      .addToggle((toggle) =>
+        toggle
+          .setValue(this.plugin.settings.debugMode || false)
+          .onChange(async (value) => {
+            this.plugin.settings.debugMode = value;
+            await this.plugin.saveSettings();
+          })
+      );
   }
 }

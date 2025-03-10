@@ -90,12 +90,15 @@ export default class GhostFocusPlugin extends Plugin {
     const fadedLines = (): Extension => {
       return [baseTheme, [], showFadedLines];
     };
+    
+    // Create a closure that captures the plugin instance
+    const plugin = this;
 
     const showFadedLines = ViewPlugin.fromClass(
       class {
         decorations: DecorationSet;
         constructor(view: EditorView) {
-          this.decorations = fadedLineDeco(view);
+          this.decorations = fadedLineDeco(view, plugin.settings);
         }
 
         update(update: ViewUpdate) {
@@ -104,7 +107,7 @@ export default class GhostFocusPlugin extends Plugin {
             update.viewportChanged ||
             update.selectionSet
           ) {
-            this.decorations = fadedLineDeco(update.view);
+            this.decorations = fadedLineDeco(update.view, plugin.settings);
           }
         }
       },
@@ -127,15 +130,21 @@ export default class GhostFocusPlugin extends Plugin {
         },
       });
 
-    const fadedLineDeco = (view: EditorView) => {
+    const fadedLineDeco = (view: EditorView, settings: GhostFocusSettings) => {
       const cursorPos = view.state.selection.main.head;
       const cursorPosLine = view.state.doc.lineAt(cursorPos).number;
+      
+      // Debug logging
+      if (settings.debugMode) {
+        console.log("[DEBUG] Cursor position:", cursorPos, "on line:", cursorPosLine);
+        console.log("[DEBUG] Cursor line text:", view.state.doc.lineAt(cursorPos).text, 
+          "isEmpty:", isEmptyLine(view.state.doc.lineAt(cursorPos).text));
+      }
 
       // Extract visible lines for processing
       const visibleLines: string[] = [];
       const lineNumbers: number[] = [];
       
-      // First collect all visible lines
       for (let { from, to } of view.visibleRanges) {
         for (let pos = from; pos <= to; ) {
           let line = view.state.doc.lineAt(pos);
@@ -145,35 +154,52 @@ export default class GhostFocusPlugin extends Plugin {
         }
       }
       
-      // Find the index of the cursor line in our array
-      const cursorIndex = lineNumbers.indexOf(cursorPosLine);
+      // Find the index of the cursor line in our visible lines array
+      const cursorLineIndex = lineNumbers.indexOf(cursorPosLine);
       
-      // Calculate effective distances using our helper function
-      const nonEmptyLines = calculateEffectiveDistances(visibleLines, cursorIndex);
+      if (settings.debugMode) {
+        console.log("[DEBUG] Cursor line index in visible lines:", cursorLineIndex);
+        console.log("[DEBUG] Total visible lines:", visibleLines.length);
+      }
       
-      // Second pass: Apply decorations based on the effective distances
+      // Use the utility function to calculate effective distances
+      const effectiveDistances = calculateEffectiveDistances(visibleLines, cursorLineIndex);
+      
+      if (settings.debugMode) {
+        console.log("[DEBUG] Effective distances:", 
+          Array.from(effectiveDistances.entries()).map(([idx, dist]) => 
+            `Line ${lineNumbers[idx]}: distance ${dist}`).join(", "));
+        console.log("[DEBUG] --- Applying decorations ---");
+      }
+
+      // Apply decorations based on the effective distances
       let builder = new RangeSetBuilder<Decoration>();
-      for (let { from, to } of view.visibleRanges) {
-        for (let pos = from; pos <= to; ) {
-          let line = view.state.doc.lineAt(pos);
-          const isEmpty = isEmptyLine(line.text);
+      for (let i = 0; i < visibleLines.length; i++) {
+        const lineNumber = lineNumbers[i];
+        const lineText = visibleLines[i];
+        const isEmpty = isEmptyLine(lineText);
+        
+        if (settings.debugMode) {
+          console.log("[DEBUG] Decoration for line", lineNumber, ":", 
+            JSON.stringify(lineText), "isEmpty:", isEmpty);
+        }
+        
+        if (!isEmpty) {
+          const effectiveDistance = effectiveDistances.get(i) || 0;
           
-          if (!isEmpty) {
-            // Find the index of this line in our array
-            const lineIndex = lineNumbers.indexOf(line.number);
-            const effectiveDistance = nonEmptyLines.get(lineIndex) || 0;
-            
-            if (effectiveDistance <= 5) {
-              builder.add(
-                line.from,
-                line.from,
-                fadedLine(effectiveDistance)
-              );
-            } else {
-              builder.add(line.from, line.from, fadedLineOther());
-            }
+          if (settings.debugMode) {
+            console.log("[DEBUG] Applying decoration with distance", 
+              effectiveDistance, "to line", lineNumber);
           }
-          pos = line.to + 1;
+          
+          const line = view.state.doc.line(lineNumber);
+          if (effectiveDistance <= 5) {
+            builder.add(line.from, line.from, fadedLine(effectiveDistance));
+          } else {
+            builder.add(line.from, line.from, fadedLineOther());
+          }
+        } else if (settings.debugMode) {
+          console.log("[DEBUG] Skipping decoration for empty line", lineNumber);
         }
       }
       return builder.finish();
