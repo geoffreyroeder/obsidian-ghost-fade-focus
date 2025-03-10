@@ -13,6 +13,11 @@ import {
   DEFAULT_SETTINGS,
 } from "./settings";
 
+// Utility function to detect empty lines
+export function isEmptyLine(text: string): boolean {
+  return text.trim() === "";
+}
+
 export default class GhostFocusPlugin extends Plugin {
   settings: GhostFocusSettings;
   rootElement: HTMLElement;
@@ -130,22 +135,54 @@ export default class GhostFocusPlugin extends Plugin {
       const cursorPos = view.state.selection.main.head;
       const cursorPosLine = view.state.doc.lineAt(cursorPos).number;
 
+      // First pass: Identify non-empty lines and calculate effective distances
+      const nonEmptyLines = new Map<number, number>();
+      let effectiveDistanceUp = 0;
+      let effectiveDistanceDown = 0;
+      
+      // Scan visible lines and calculate effective distances that ignore empty lines
+      for (let { from, to } of view.visibleRanges) {
+        for (let pos = from; pos <= to; ) {
+          let line = view.state.doc.lineAt(pos);
+          const isEmpty = isEmptyLine(line.text);
+          
+          if (!isEmpty) {
+            if (line.number < cursorPosLine) {
+              // Count up from bottom to cursor
+              nonEmptyLines.set(line.number, effectiveDistanceUp);
+              effectiveDistanceUp++;
+            } else if (line.number > cursorPosLine) {
+              // Count down from cursor to bottom
+              effectiveDistanceDown++;
+              nonEmptyLines.set(line.number, effectiveDistanceDown);
+            } else {
+              // This is the cursor line
+              nonEmptyLines.set(line.number, 0);
+            }
+          }
+          pos = line.to + 1;
+        }
+      }
+
+      // Second pass: Apply decorations based on the effective distances
       let builder = new RangeSetBuilder<Decoration>();
       for (let { from, to } of view.visibleRanges) {
         for (let pos = from; pos <= to; ) {
           let line = view.state.doc.lineAt(pos);
-
-          if (
-            line.number >= cursorPosLine - 5 &&
-            line.number <= cursorPosLine + 5
-          ) {
-            builder.add(
-              line.from,
-              line.from,
-              fadedLine(Math.abs(line.number - cursorPosLine))
-            );
-          } else {
-            builder.add(line.from, line.from, fadedLineOther());
+          const isEmpty = isEmptyLine(line.text);
+          
+          if (!isEmpty) {
+            const effectiveDistance = nonEmptyLines.get(line.number) || 0;
+            
+            if (effectiveDistance <= 5) {
+              builder.add(
+                line.from,
+                line.from,
+                fadedLine(effectiveDistance)
+              );
+            } else {
+              builder.add(line.from, line.from, fadedLineOther());
+            }
           }
           pos = line.to + 1;
         }

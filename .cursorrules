@@ -1,0 +1,163 @@
+{
+    "rules": {
+        "context_initialization": {
+            "description": "Starting point for each interaction",
+            "steps": [
+                "ALWAYS read `.notes/project_overview.md` and `.notes/task_list.md`"
+            ]
+        },
+        "priorities": [
+            {
+                "source": ".notes/",
+                "weight": 1.0
+            }
+        ],
+        "project_directives": {
+            "name": "malareparam"
+        },
+        "context_management": {
+            "description": "Instructions for maintaining important context",
+            "rules": [
+                "Begin each session with very concise summary of the current project state and top priority task",
+                "When context window is limited, prioritize: 1) current task details, 2) relevant code structure, 3) recent changes",
+                "ALWAYS Track key decisions and assumptions in .notes/decisions.md",
+                "ALWAYS Create a session summary at the end of each major interaction in .notes/session_summary.md"
+            ]
+        },
+        "modes": {
+            "initial": "plan",
+            "title": "I work in three distinct modes: Plan, Debug, and Act",
+            "meta_cognitive": {
+                "description": "Self-monitoring instructions that apply across all modes",
+                "rules": [
+                    "Before finalizing any response, validate assumptions and check for logical consistency",
+                    "When uncertainty exceeds 20%, explicitly state concerns and ask clarifying questions",
+                    "When handling complex problems, explain high-level reasoning before details",
+                    "Track confidence explicitly with a percentage value",
+                    "Use structured reasoning: 0) state goal and relate to project overview, 1) state problem, 2) identify constraints, 3) evaluate options, 4) recommend solution"
+                ]
+            },
+            "plan": {
+                "start": true,
+                "name": "Plan",
+                "read": true,
+                "write": false,
+                "keyword": "plan",
+                "description": "Focus on information gathering, problem understanding, and solution architecture",
+                "rules": [
+                    "Create a MECE task breakdown with clear, atomic subtasks",
+                    "Continue investigating until {confidenceRequired}% confidence",
+                    "Track confidence with specific gaps in knowledge that would increase confidence",
+                    "Verify alignment with top priority task in task_list.md",
+                    "End with \"Confidence: X%. Would you like me to implement this plan?\"",
+                    "If confidence < 80%, suggest specific information needed to proceed"
+                ],
+                "transition": {
+                    "to_debug": "Transitioning to Debug mode to fix the identified issue.",
+                    "to_edit": "Transitioning to Edit mode to implement the planned feature."
+                }
+            },
+            "debug": {
+                "name": "Debug",
+                "read": true,
+                "write": true,
+                "keyword": "debug",
+                "description": "Focus on identifying and fixing issues in existing code",
+                "confidenceRequired": 90,
+                "conditions": [
+                    "Confidence reached {confidenceRequired}%",
+                    "Explicit user approval with 'Yes' or 'Debug'",
+                    "Clear problem statement defined"
+                ],
+                "rules": [
+                    "Start with a minimal reproducible example",
+                    "State debugging hypothesis explicitly before implementing fixes",
+                    "Use root cause analysis: trace errors to their source rather than fixing symptoms",
+                    "Test solution against multiple cases",
+                    "Document both the problem and solution",
+                    "Return to plan mode if new questions arise or confidence drops below 70%"
+                ],
+                "error_recovery": {
+                    "if_fix_fails": "If the fix doesn't resolve the issue: 1) document the attempt, 2) revert to plan mode, 3) create alternative hypotheses"
+                }
+            },
+            "act": {
+                "name": "Act",
+                "read": true,
+                "write": true,
+                "keyword": "act",
+                "description": "Focus on implementing new features or making planned changes to the codebase",
+                "confidenceRequired": 100,
+                "conditions": [
+                    "Confidence reached {confidenceRequired}%",
+                    "Explicit user approval with 'Yes' or 'Act'",
+                    "Clear specification of the change"
+                ],
+                "rules": [
+                    "Always state explicitly what you are going to do before you do it",
+                    "Begin with a failing test that validates the feature requirements",
+                    "Break implementation into small, verifiable steps",
+                    "Document design decisions and alternatives considered",
+                    "Consider edge cases explicitly before completing implementation",
+                    "Return to plan mode if requirements are unclear or new questions arise"
+                ],
+                "error_recovery": {
+                    "if_implementation_blocked": "If implementation is blocked: 1) document specific obstacles, 2) return to plan mode, 3) suggest alternative approaches"
+                }
+            }
+        },
+        "technical_guidelines": {
+            "jax": {
+                "description": "Consolidated JAX programming rules",
+                "rules": [
+                    "Never use dynamic Python slicing (arr[start:stop]) where start/stop depend on non-static function inputs",
+                    "Use vmap instead of manually writing out loops",
+                    "Ensure you're using the latest version of JAX"
+                ]
+            },
+            "code_quality": {
+                "description": "Standards for code quality",
+                "rules": [
+                    "Write self-documenting code with clear variable names",
+                    "Include meaningful docstrings for all functions",
+                    "Group related functionality"
+                ]
+            }
+        },
+        "documentation_requirements": {
+            "description": "Documentation standards across all modes",
+            "templates": {
+                "implementation_log": "- {date} {time}: {action} - {concise_summary} [File: {file_link}]",
+                "meeting_notes": "## Meeting {date} {time}\n\n### Goals\n- {goal1}\n\n### Decisions\n- {decision1}\n\n### Action Items\n- {action1}",
+                "task_update": "- [ ] {task_description} (Added: {date})"
+            },
+            "rules": [
+                "ALWAYS append new content to the START of documentation files, not the end",
+                "Update implementation_log.md after any code changes with timestamp and concise summary",
+                "When transitioning from plan to action mode, create a new timestamped section in meeting_notes.md",
+                "When transitioning from plan to action mode, update task_list.md and check for conflicts",
+                "Create periodic (weekly) project status summaries in .notes/status_updates.md",
+                "Document key technical decisions with rationale in .notes/decisions.md"
+            ]
+        },
+        "continuity_management": {
+            "description": "Ensuring project continuity across sessions",
+            "rules": [
+                "Begin each session with 'Current status: {brief_status}. Next priority: {next_task}. Why: {why_this_task}. [Confidence: {confidence}%]'",
+                "End each session with a summary of progress and open questions",
+                "Maintain a 'blocking issues' section in task_list.md",
+                "Update project_overview.md when significant architectural changes occur"
+            ]
+        },
+        "task_management": {
+            "description": "Rules for managing tasks and tracking progress",
+            "rules": [
+                "NEVER mark a parent task as completed [x] if it has any uncompleted subtasks [ ]",
+                "Only mark a task as completed when ALL its subtasks are completed",
+                "When creating task hierarchies, ensure parent tasks accurately reflect the status of all subtasks",
+                "Regularly review task list to ensure consistency between parent and subtask completion status",
+                "When updating task status, always check parent-child relationships"
+            ]
+        }
+    }
+}
