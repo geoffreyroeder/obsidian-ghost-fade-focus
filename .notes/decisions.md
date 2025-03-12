@@ -66,4 +66,31 @@ Revised the `calculateEffectiveDistances` function to properly handle distance c
 - Distance calculation is now consistent for lines both above and below the cursor
 - Empty lines are properly skipped in all distance calculations
 - The fading effect provides a more intuitive experience when navigating through documents
-- Tests now correctly verify the expected behavior 
+- Tests now correctly verify the expected behavior
+
+## 2024-03-10: Adding Debug Mode for Troubleshooting
+
+### Decision
+Implemented a debug mode with detailed console logging to help diagnose any issues with the plugin.
+
+### Rationale
+- Complex algorithms like distance calculation benefit from visibility into internal state
+- Users and developers need tools to troubleshoot unexpected behavior
+- Console logging provides non-intrusive diagnostics without affecting normal operation
+- Toggle in settings ensures logs only appear when actively debugging
+
+### Implementation Details
+- Added debug mode toggle in plugin settings
+- Implemented conditional logging throughout the code
+- Log key information including:
+  - Cursor position and line content
+  - Visible lines and their properties
+  - Distance calculations for each line
+  - Decoration application decisions
+- Ensured logs are descriptive and include context
+
+### Consequences
+- Easier troubleshooting for both developers and users
+- Better visibility into the plugin's internal operation
+- Minimal performance impact when disabled
+- Improved maintainability for future development 

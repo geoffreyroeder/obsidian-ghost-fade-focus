@@ -1,6 +1,8 @@
 # Task List
 
 ## Completed
+- [x] Consider adding a debug mode for diagnostics
+- [x] Verify behavior with real-world documents in Obsidian
 - [x] Fix inconsistency in distance calculation for lines above the cursor
 - [x] Update test expectations to match the correct implementation
 - [x] Integrate improved distance calculation into main plugin
@@ -19,13 +21,11 @@
 - [x] Add tests for edge cases with empty lines
 
 ## In Progress
-- [ ] Add comprehensive tests for cursor movement edge cases
-- [ ] Verify behavior with real-world documents in Obsidian
-- [ ] Consider adding a debug mode for diagnostics
-- [ ] Verify all tests pass consistently
 - [ ] Document testing approach for future reference
 
 ## Backlog
+- [ ] Add comprehensive tests for cursor movement edge cases
+- [ ] Verify all tests pass consistently
 - [ ] Monitor performance with large documents
 - [ ] Set up continuous integration for automated testing
 - [ ] Add integration tests with simulated user interactions

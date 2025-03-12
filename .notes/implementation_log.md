@@ -17,3 +17,5 @@
 - 2024-03-10 20:45: Updated test expectations - Fixed "should handle cursor at last line" test case in `empty-line-handling.test.ts` to match the correct implementation [File: src/test/empty-line-handling.test.ts]
 - 2024-03-10 21:00: Integrated improved distance calculation - Updated `main.ts` to use the improved `calculateEffectiveDistances` function from `utils.ts` [File: src/main.ts]
 - 2024-03-10 21:15: Verified consistent empty line handling - Confirmed that empty lines are properly skipped in distance calculations both above and below the cursor [File: src/utils.ts]
+- 2024-03-10 22:30: Implemented debug mode - Added debug mode toggle in settings and detailed console logging for troubleshooting [File: src/settings.ts, src/main.ts]
+- 2024-03-10 22:00: Completed acceptance testing - Verified plugin behavior in Obsidian with various document types and confirmed readiness for release [File: N/A]
