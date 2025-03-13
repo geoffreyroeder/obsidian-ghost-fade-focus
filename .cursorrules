@@ -165,6 +165,18 @@
                     "Quality Check: Ask 'Could a new developer understand this in under 30 seconds?'"
                 ]
             },
+            "testing": {
+                "description": "Rules for effective test implementation",
+                "rules": [
+                    "Direct Implementation Testing: ALWAYS test actual implementation code, not mocks or duplicates of functions",
+                    "Function Exports: Make core functions exportable to facilitate direct testing",
+                    "Test Design: Structure tests to import and test real implementations directly",
+                    "No Logic Duplication: Never duplicate implementation logic in test files",
+                    "Test Boundary: Tests should verify behavior, not implementation details",
+                    "Visibility: Keep test helper functions in separate files from implementation code",
+                    "Testability: Design code with testability in mind, using dependency injection where appropriate"
+                ]
+            },
             "language_specific": {
                 "jax": {
                     "description": "JAX-specific programming rules",

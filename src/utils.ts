@@ -126,4 +126,61 @@ function assignDistancesBelowCursor(
     const distance = i + 1;
     distanceMap.set(lineIndex, distance);
   }
+}
+
+/**
+ * Removes any existing fade classes from an element
+ */
+export function removeExistingFadeClasses(element: HTMLElement): void {
+  element.classList.remove(
+    'ghost-fade-focus',
+    'ghost-fade-focus--1',
+    'ghost-fade-focus--2',
+    'ghost-fade-focus--3',
+    'ghost-fade-focus--4',
+    'ghost-fade-focus--5'
+  );
+}
+
+/**
+ * Applies fade classes to line number elements based on distance map
+ * 
+ * This function is exported for both usage in the plugin and for testing
+ */
+export function applyLineNumberFading(
+  gutterElements: NodeListOf<Element> | HTMLElement[],
+  lineNumberToDistance: Map<number, number>
+): void {
+  gutterElements.forEach(element => {
+    // Cast to HTMLElement to access style property
+    const el = element as HTMLElement;
+    
+    // Get line number (content of the element)
+    const lineNumber = parseInt(el.textContent || '0', 10);
+    if (isNaN(lineNumber)) return;
+    
+    // Remove any existing ghost-fade classes
+    removeExistingFadeClasses(el);
+    
+    // Skip if it's the active line
+    if (el.classList.contains('cm-active')) return;
+    
+    // Skip hidden elements - check if visibility is explicitly set to 'hidden'
+    try {
+      if (el.style.visibility === 'hidden') return;
+    } catch (error) {
+      // If visibility property access causes error, ignore and continue
+    }
+    
+    // Apply the appropriate class based on distance
+    const distance = lineNumberToDistance.get(lineNumber);
+    
+    if (distance !== undefined) {
+      if (distance <= 5) {
+        el.classList.add(`ghost-fade-focus--${distance}`);
+      } else {
+        el.classList.add('ghost-fade-focus');
+      }
+    }
+  });
 } 

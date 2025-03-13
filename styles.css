@@ -19,3 +19,27 @@
 .cm-line.ghost-fade-focus--5 {
   opacity: var(--ghost-fade-focus-opacity-5);
 }
+
+/* Line number fading */
+.cm-gutterElement.ghost-fade-focus {
+  opacity: var(--ghost-fade-focus-opacity);
+}
+.cm-gutterElement.ghost-fade-focus--1 {
+  opacity: var(--ghost-fade-focus-opacity-1);
+}
+.cm-gutterElement.ghost-fade-focus--2 {
+  opacity: var(--ghost-fade-focus-opacity-2);
+}
+.cm-gutterElement.ghost-fade-focus--3 {
+  opacity: var(--ghost-fade-focus-opacity-3);
+}
+.cm-gutterElement.ghost-fade-focus--4 {
+  opacity: var(--ghost-fade-focus-opacity-4);
+}
+.cm-gutterElement.ghost-fade-focus--5 {
+  opacity: var(--ghost-fade-focus-opacity-5);
+}
+/* Ensure active line number stays at full opacity */
+.cm-gutterElement.cm-active {
+  opacity: 1 !important;
+}

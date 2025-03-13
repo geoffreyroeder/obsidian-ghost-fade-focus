@@ -1,5 +1,23 @@
 # Implementation Log
 
+- 2024-03-14 10:15: Refactored - Comprehensive readability improvements to main.ts following code standards [File: src/main.ts]
+  - Restructured code with clear section organization (view plugin, decorations, line number fading, etc.)
+  - Broke down large functions into smaller, focused ones with single responsibilities
+  - Improved documentation with "why" explanations and context
+  - Enhanced function naming and ensured consistent abstraction levels
+  - Reduced cognitive load by shortening variable lifespans and clarifying intent
+- 2024-03-13 16:30: Fixed - Removed named exports from main.ts to resolve Rollup build error [File: src/main.ts]
+  The error "default was specified for output.exports, but entry module has the following exports" was resolved by ensuring that main.ts only has a default export. The line number fading implementation was properly moved to utils.ts, which allows the functions to be tested directly without being re-exported from main.ts.
+- 2024-03-13 12:25: Updated test structure - Exported line number fading functions for direct testing [File: src/main.ts, src/test/line-number-fading.test.ts]
+- 2024-03-13 12:20: Updated code standards - Added testing rules to enforce testing actual implementations rather than mocks [File: .cursorrules]
+- 2024-03-13 12:15: Fixed hidden elements handling - Updated the line number fading to correctly handle elements with hidden visibility [File: src/main.ts]
+- 2024-03-13 12:10: Improved error handling - Added robust error handling for DOM operations in line number fading [File: src/main.ts]
+- 2024-03-13 11:50: Fixed TypeScript linter error - Properly typed DOM element for style property access [File: src/main.ts]
+- 2024-03-13 11:45: Refactored code for readability - Improved structure and documentation of line number fading implementation [File: src/main.ts]
+- 2024-03-13 11:44: Updated toggle and cleanup methods - Ensured proper cleanup when plugin is disabled [File: src/main.ts]
+- 2024-03-13 11:43: Added line number fading function - Implemented direct DOM manipulation to apply opacity classes [File: src/main.ts]
+- 2024-03-13 11:42: Added CSS rules for line numbers - Applied the same opacity variables used for text lines [File: styles.css]
+- 2024-03-13 11:41: Added line number fading tests - Created test cases following TDD principles [File: src/test/line-number-fading.test.ts]
 - 2024-03-10 16:40: Created Jest testing environment - Set up Jest with TypeScript configuration [File: package.json]
 - 2024-03-10 16:45: Created Obsidian API mock - Implemented basic mock structure [File: __mocks__/obsidian.ts]
 - 2024-03-10 16:50: Created CodeMirror API mock - Implemented view and state module mocks [File: __mocks__/codemirror.ts]

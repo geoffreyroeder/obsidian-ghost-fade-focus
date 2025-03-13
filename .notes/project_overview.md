@@ -1,5 +1,29 @@
 # Ghost Fade Focus Plugin - Project Overview
 
+## Directory structure
+.cursorrules
+src
+├── main.ts
+├── settings.ts
+├── test
+└── utils.ts
+src/test
+├── css-variables.test.ts
+├── decoration-logic.test.ts
+├── empty-line-handling.test.ts
+├── line-number-fading.test.ts
+├── main.test.ts
+├── settings.test.ts
+└── utils.test.ts
+.notes
+├── decisions.md
+├── implementation_log.md
+├── project_overview.md
+├── session_summary.md
+├── status_updates.md
+├── task_list.md
+└── til.md
+
 ## Description
 The Ghost Fade Focus plugin for Obsidian provides a focus mode that fades text based on its distance from the cursor position. The key innovation is that it ignores empty lines when calculating these distances, creating a more natural focus experience.
 
