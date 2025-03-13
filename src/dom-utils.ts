@@ -85,8 +85,14 @@ export function removeExistingFadeClasses(element: HTMLElement): void {
  */
 export function applyLineNumberFading(
   gutterElements: NodeListOf<Element> | HTMLElement[],
-  lineNumberToDistance: Map<number, number>
+  lineNumberToDistance: Map<number, number>,
+  debugMode: boolean = false
 ): void {
+  if (debugMode) {
+    console.log(`[DEBUG] Applying fading to ${gutterElements.length} line number elements`);
+    console.log(`[DEBUG] Distance map contains ${lineNumberToDistance.size} entries`);
+  }
+
   gutterElements.forEach(element => {
     // Cast to HTMLElement to access style property
     const el = element as HTMLElement;
@@ -99,11 +105,21 @@ export function applyLineNumberFading(
     removeExistingFadeClasses(el);
     
     // Skip if it's the active line
-    if (el.classList.contains('cm-active')) return;
+    if (el.classList.contains('cm-active')) {
+      if (debugMode) {
+        console.log(`[DEBUG] Skipping active line number ${lineNumber}`);
+      }
+      return;
+    }
     
     // Skip hidden elements - check if visibility is explicitly set to 'hidden'
     try {
-      if (el.style.visibility === 'hidden') return;
+      if (el.style.visibility === 'hidden') {
+        if (debugMode) {
+          console.log(`[DEBUG] Skipping hidden line number ${lineNumber}`);
+        }
+        return;
+      }
     } catch (error) {
       // If visibility property access causes error, ignore and continue
     }
@@ -114,9 +130,17 @@ export function applyLineNumberFading(
     if (distance !== undefined) {
       if (distance <= 5) {
         el.classList.add(`ghost-fade-focus--${distance}`);
+        if (debugMode) {
+          console.log(`[DEBUG] Applied fade class ghost-fade-focus--${distance} to line number ${lineNumber}`);
+        }
       } else {
         el.classList.add('ghost-fade-focus');
+        if (debugMode) {
+          console.log(`[DEBUG] Applied default fade class to line number ${lineNumber}`);
+        }
       }
+    } else if (debugMode) {
+      console.log(`[DEBUG] No distance calculated for line number ${lineNumber}, not applying fade`);
     }
   });
 }
@@ -143,6 +167,7 @@ export function applyGutterFading(
   
   if (settings.debugMode) {
     console.log(`[DEBUG] Found ${gutterElements.length} line number elements`);
+    console.log(`[DEBUG] Visible context contains ${visibleContext.lines.length} lines`);
   }
   
   // Create mapping from line number to distance
@@ -153,14 +178,14 @@ export function applyGutterFading(
   );
   
   // Apply fading classes to gutter elements using the utility function
-  applyLineNumberFading(gutterElements, lineNumberToDistance);
+  applyLineNumberFading(gutterElements, lineNumberToDistance, settings.debugMode);
 }
 
 /**
  * Creates a mapping from line numbers to their distances from cursor
  * 
- * This extracts only the relevant line numbers and their distances,
- * focusing only on non-empty lines that have calculated distances.
+ * This extracts the relevant line numbers and their distances,
+ * including empty lines which get the distance of the nearest non-empty line.
  */
 function createLineNumberDistanceMap(
   visibleContext: VisibleLinesContext,
@@ -170,18 +195,52 @@ function createLineNumberDistanceMap(
   const lineNumberToDistance = new Map<number, number>();
   
   visibleContext.lines.forEach((line, index) => {
-    // Only map non-empty lines that have a calculated distance
-    if (!isEmptyLine(line.text) && effectiveDistances.has(index)) {
+    // Include all lines that have a calculated distance
+    if (effectiveDistances.has(index)) {
       const distance = effectiveDistances.get(index) || 0;
       lineNumberToDistance.set(line.number, distance);
       
       if (settings.debugMode) {
         console.log(`[DEBUG] Line ${line.number} mapped to distance ${distance}`);
       }
+    } else if (isEmptyLine(line.text)) {
+      // For empty lines, find the nearest non-empty line's distance
+      let nearestDistance = findNearestNonEmptyLineDistance(index, visibleContext, effectiveDistances);
+      lineNumberToDistance.set(line.number, nearestDistance);
+      
+      if (settings.debugMode) {
+        console.log(`[DEBUG] Empty line ${line.number} mapped to distance ${nearestDistance} (from nearest non-empty line)`);
+      }
     }
   });
   
   return lineNumberToDistance;
+}
+
+/**
+ * Finds the distance of the nearest non-empty line to the given index
+ */
+function findNearestNonEmptyLineDistance(
+  emptyLineIndex: number,
+  visibleContext: VisibleLinesContext,
+  effectiveDistances: Map<number, number>
+): number {
+  // Look for the nearest non-empty line above
+  for (let i = emptyLineIndex - 1; i >= 0; i--) {
+    if (!isEmptyLine(visibleContext.lines[i].text) && effectiveDistances.has(i)) {
+      return effectiveDistances.get(i) || 0;
+    }
+  }
+  
+  // If no non-empty line above, look below
+  for (let i = emptyLineIndex + 1; i < visibleContext.lines.length; i++) {
+    if (!isEmptyLine(visibleContext.lines[i].text) && effectiveDistances.has(i)) {
+      return effectiveDistances.get(i) || 0;
+    }
+  }
+  
+  // If no non-empty line found, use a default distance
+  return 5; // Default to a medium distance
 }
 
 /**

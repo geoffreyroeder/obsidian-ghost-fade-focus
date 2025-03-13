@@ -72,4 +72,9 @@
     - document-analysis.ts: Line analysis and distance calculations
     - dom-utils.ts: DOM manipulation and styling
     - debug.ts: Debugging utilities
+- 2024-03-14 15:30: Fixed - Line number fading for empty lines [File: src/dom-utils.ts]
+  - Modified `createLineNumberDistanceMap` to include empty lines in the distance calculation
+  - Added `findNearestNonEmptyLineDistance` helper function to find the nearest non-empty line's distance
+  - Fixed issue where line number fading would cut off at empty lines
+  - Empty lines now get the same fading as the nearest non-empty line, creating a smooth transition
 
