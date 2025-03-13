@@ -20,7 +20,7 @@
             "description": "Rules for managing user interaction sessions",
             "session_start": {
                 "description": "How to begin each interaction",
-                "format": "Current status: {brief_status}. Next priority: {next_task}. Why: {why_this_task}. [Confidence: {confidence}%]"
+                "format": "Current status: {brief_status}.\nNext priority: {next_task}.\nWhy: {why_this_task}.\n[Confidence: {confidence}%]"
             },
             "session_end": {
                 "description": "How to conclude each interaction",
@@ -42,7 +42,7 @@
                     "MUST validate all assumptions with explicit evidence before finalizing any response",
                     "MUST explicitly list information gaps when uncertainty exists",
                     "MUST downgrade confidence by at least 15% for each missing critical piece of information",
-                    "MUST NOT exceed 80% confidence without visual evidence for visual problems",
+                    "MUST NOT exceed 95% confidence without visual evidence for visual problems",
                     "MUST use the confidence checklist before stating any confidence level",
                     "When handling complex problems, explain high-level reasoning before details",
                     "Track confidence explicitly with a percentage value",

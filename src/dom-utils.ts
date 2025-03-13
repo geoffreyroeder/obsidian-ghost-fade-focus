@@ -159,15 +159,40 @@ export function applyGutterFading(
   effectiveDistances: Map<number, number>,
   settings: GhostFocusSettings
 ): void {
+  // Enhanced startup logging
+  console.log(`[DEBUG] applyGutterFading called with ${visibleContext.lines.length} visible lines`);
+  console.log(`[DEBUG] Cursor line index: ${visibleContext.cursorLineIndex}`);
+  
   // Get all gutter elements
   const gutterElements = view.dom.querySelectorAll('.cm-gutter.cm-lineNumbers .cm-gutterElement');
   
+  // Enhanced logging for DOM elements
+  console.log(`[DEBUG] Found ${gutterElements.length} line number elements in DOM`);
+  
   // Skip if no gutter elements (line numbers disabled)
-  if (gutterElements.length === 0) return;
+  if (gutterElements.length === 0) {
+    console.log(`[DEBUG] No gutter elements found, skipping line number fading`);
+    return;
+  }
+  
+  // Log the first few gutter elements to verify they're correct
+  if (settings.debugMode && gutterElements.length > 0) {
+    console.log(`[DEBUG] First 3 gutter elements:`, 
+      Array.from(gutterElements).slice(0, 3).map(el => ({
+        lineNumber: el.textContent,
+        classes: (el as HTMLElement).className
+      }))
+    );
+  }
   
   if (settings.debugMode) {
     console.log(`[DEBUG] Found ${gutterElements.length} line number elements`);
     console.log(`[DEBUG] Visible context contains ${visibleContext.lines.length} lines`);
+    console.log(`[DEBUG] Effective distances map has ${effectiveDistances.size} entries`);
+    
+    // Log a sample of the effective distances
+    const distanceSample = Array.from(effectiveDistances.entries()).slice(0, 5);
+    console.log(`[DEBUG] Sample of effective distances:`, distanceSample);
   }
   
   // Create mapping from line number to distance
@@ -176,6 +201,13 @@ export function applyGutterFading(
     effectiveDistances, 
     settings
   );
+  
+  // Log the mapping size and a sample of entries
+  console.log(`[DEBUG] Created line number distance map with ${lineNumberToDistance.size} entries`);
+  if (settings.debugMode) {
+    const mapEntries = Array.from(lineNumberToDistance.entries()).slice(0, 5);
+    console.log(`[DEBUG] Sample distance map entries:`, mapEntries);
+  }
   
   // Apply fading classes to gutter elements using the utility function
   applyLineNumberFading(gutterElements, lineNumberToDistance, settings.debugMode);
@@ -194,8 +226,12 @@ function createLineNumberDistanceMap(
 ): Map<number, number> {
   const lineNumberToDistance = new Map<number, number>();
   
+  // Enhanced logging
+  console.log(`[DEBUG] Creating line number distance map for ${visibleContext.lines.length} lines`);
+  console.log(`[DEBUG] Effective distances map has ${effectiveDistances.size} entries`);
+  
+  // First pass: Map all non-empty lines with calculated distances
   visibleContext.lines.forEach((line, index) => {
-    // Include all lines that have a calculated distance
     if (effectiveDistances.has(index)) {
       const distance = effectiveDistances.get(index) || 0;
       lineNumberToDistance.set(line.number, distance);
@@ -203,7 +239,15 @@ function createLineNumberDistanceMap(
       if (settings.debugMode) {
         console.log(`[DEBUG] Line ${line.number} mapped to distance ${distance}`);
       }
-    } else if (isEmptyLine(line.text)) {
+    }
+  });
+  
+  // Second pass: Map empty lines to nearest non-empty line distance
+  visibleContext.lines.forEach((line, index) => {
+    // Skip lines that already have a distance
+    if (lineNumberToDistance.has(line.number)) return;
+    
+    if (isEmptyLine(line.text)) {
       // For empty lines, find the nearest non-empty line's distance
       let nearestDistance = findNearestNonEmptyLineDistance(index, visibleContext, effectiveDistances);
       lineNumberToDistance.set(line.number, nearestDistance);
@@ -211,8 +255,14 @@ function createLineNumberDistanceMap(
       if (settings.debugMode) {
         console.log(`[DEBUG] Empty line ${line.number} mapped to distance ${nearestDistance} (from nearest non-empty line)`);
       }
+    } else {
+      // This is a non-empty line without a distance - log this case
+      console.log(`[DEBUG] Non-empty line ${line.number} has no distance calculated`);
     }
   });
+  
+  // Log summary of what was mapped
+  console.log(`[DEBUG] Final line number distance map has ${lineNumberToDistance.size} entries out of ${visibleContext.lines.length} lines`);
   
   return lineNumberToDistance;
 }

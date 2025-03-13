@@ -74,12 +74,27 @@ function needsDecorationsUpdate(update: ViewUpdate): boolean {
  * 3. Applying decorations to both text and line numbers
  */
 export function createFadedLineDecorations(view: EditorView, settings: GhostFocusSettings): DecorationSet {
+  console.log(`[DEBUG] createFadedLineDecorations called`);
+  
   // Get the cursor position and extract visible lines
   const cursorPosition = view.state.selection.main.head;
-  const visibleLinesContext = extractVisibleLines(view, cursorPosition);
+  console.log(`[DEBUG] Cursor position: ${cursorPosition}`);
   
-  // Log debug information if enabled
-  logDebugInfo(visibleLinesContext, settings);
+  const visibleLinesContext = extractVisibleLines(view, cursorPosition);
+  console.log(`[DEBUG] Extracted ${visibleLinesContext.lines.length} visible lines`);
+  console.log(`[DEBUG] Cursor line index: ${visibleLinesContext.cursorLineIndex}`);
+  
+  // Log the first few visible lines
+  if (settings.debugMode) {
+    const sampleLines = visibleLinesContext.lines.slice(0, 5);
+    console.log(`[DEBUG] First 5 visible lines:`, 
+      sampleLines.map(line => ({
+        number: line.number,
+        text: line.text.substring(0, 20) + (line.text.length > 20 ? '...' : ''),
+        isEmpty: isEmptyLine(line.text)
+      }))
+    );
+  }
   
   // Calculate distances from cursor, ignoring empty lines
   const effectiveDistances = calculateEffectiveDistances(
@@ -87,11 +102,15 @@ export function createFadedLineDecorations(view: EditorView, settings: GhostFocu
     visibleLinesContext.cursorLineIndex
   );
   
+  console.log(`[DEBUG] Calculated ${effectiveDistances.size} effective distances`);
+  
   // Log distance calculations if debug mode is enabled
   logDistanceDebugInfo(visibleLinesContext, effectiveDistances, settings);
   
   // Apply fading to line numbers
+  console.log(`[DEBUG] Calling applyGutterFading`);
   applyGutterFading(view, visibleLinesContext, effectiveDistances, settings);
+  console.log(`[DEBUG] applyGutterFading completed`);
   
   // Build and return the text line decorations
   return buildLineDecorations(visibleLinesContext, effectiveDistances, settings);
@@ -165,12 +184,13 @@ function buildLineDecorations(
  */
 function shouldSkipLine(
   lineInfo: LineInfo, 
-  lineIndex: number, 
+  lineIndex: number,  // DEBUG: why is this needed?
   settings: GhostFocusSettings
 ): boolean {
   const isEmpty = isEmptyLine(lineInfo.text);
   
   if (isEmpty && settings.debugMode) {
+    // DEBUG: this is happening at startup
     console.log(`[DEBUG] Skipping decoration for empty line ${lineInfo.number}`);
   }
   
