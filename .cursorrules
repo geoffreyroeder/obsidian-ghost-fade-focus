@@ -1,34 +1,43 @@
 {
     "rules": {
-        "context_initialization": {
-            "description": "Starting point for each interaction",
-            "steps": [
-                "ALWAYS read `.notes/project_overview.md` and `.notes/task_list.md`"
-            ]
-        },
-        "priorities": [
-            {
-                "source": ".notes/",
-                "weight": 1.0
+        "project_configuration": {
+            "name": "malareparam",
+            "priorities": [
+                {
+                    "source": ".notes/",
+                    "weight": 1.0
+                }
+            ],
+            "initialization": {
+                "description": "Starting point for each interaction",
+                "steps": [
+                    "ALWAYS read `.notes/project_overview.md` and `.notes/task_list.md`"
+                ]
             }
-        ],
-        "project_directives": {
-            "name": "malareparam"
         },
-        "context_management": {
-            "description": "Instructions for maintaining important context",
-            "rules": [
-                "Begin each session with very concise summary of the current project state and top priority task",
-                "When context window is limited, prioritize: 1) current task details, 2) relevant code structure, 3) recent changes",
-                "ALWAYS Track key decisions and assumptions in .notes/decisions.md",
-                "ALWAYS Create a session summary at the end of each major interaction in .notes/session_summary.md"
-            ]
+
+        "session_management": {
+            "description": "Rules for managing user interaction sessions",
+            "session_start": {
+                "description": "How to begin each interaction",
+                "format": "Current status: {brief_status}. Next priority: {next_task}. Why: {why_this_task}. [Confidence: {confidence}%]"
+            },
+            "session_end": {
+                "description": "How to conclude each interaction",
+                "actions": [
+                    "Update implementation_log.md with any accepted code changes",
+                    "Summarize progress and open questions"
+                ]
+            },
+            "context_handling": {
+                "description": "How to manage context during interactions",
+                "priority_order": "1) current task details, 2) relevant code structure, 3) recent changes"
+            }
         },
-        "modes": {
-            "initial": "plan",
-            "title": "I work in three distinct modes: Plan, Debug, and Act",
+
+        "work_modes": {
             "meta_cognitive": {
-                "description": "Self-monitoring instructions that apply across all modes",
+                "description": "Self-monitoring rules that apply across all modes",
                 "rules": [
                     "Before finalizing any response, validate assumptions and check for logical consistency",
                     "When uncertainty exceeds 20%, explicitly state concerns and ask clarifying questions",
@@ -38,15 +47,13 @@
                 ]
             },
             "plan": {
-                "start": true,
-                "name": "Plan",
-                "read": true,
-                "write": false,
-                "keyword": "plan",
                 "description": "Focus on information gathering, problem understanding, and solution architecture",
+                "is_default": true,
+                "read_only": true,
+                "keyword": "plan",
                 "rules": [
                     "Create a MECE task breakdown with clear, atomic subtasks",
-                    "Continue investigating until {confidenceRequired}% confidence",
+                    "Continue investigating until high confidence is reached",
                     "Track confidence with specific gaps in knowledge that would increase confidence",
                     "Verify alignment with top priority task in task_list.md",
                     "End with \"Confidence: X%. Would you like me to implement this plan?\"",
@@ -58,104 +65,125 @@
                 }
             },
             "debug": {
-                "name": "Debug",
-                "read": true,
-                "write": true,
-                "keyword": "debug",
                 "description": "Focus on identifying and fixing issues in existing code",
-                "confidenceRequired": 90,
-                "conditions": [
-                    "Confidence reached {confidenceRequired}%",
-                    "Explicit user approval with 'Yes' or 'Debug'",
-                    "Clear problem statement defined"
-                ],
+                "read_write": true,
+                "keyword": "debug",
+                "confidence_required": 90,
                 "rules": [
                     "Start with a minimal reproducible example",
                     "State debugging hypothesis explicitly before implementing fixes",
                     "Use root cause analysis: trace errors to their source rather than fixing symptoms",
                     "Test solution against multiple cases",
-                    "Document both the problem and solution",
                     "Return to plan mode if new questions arise or confidence drops below 70%"
                 ],
-                "error_recovery": {
-                    "if_fix_fails": "If the fix doesn't resolve the issue: 1) document the attempt, 2) revert to plan mode, 3) create alternative hypotheses"
-                }
+                "error_recovery": "If the fix doesn't resolve the issue: 1) document the attempt, 2) revert to plan mode, 3) create alternative hypotheses"
             },
             "act": {
-                "name": "Act",
-                "read": true,
-                "write": true,
+                "description": "Focus on implementing new features or making planned changes",
+                "read_write": true,
                 "keyword": "act",
-                "description": "Focus on implementing new features or making planned changes to the codebase",
-                "confidenceRequired": 100,
-                "conditions": [
-                    "Confidence reached {confidenceRequired}%",
-                    "Explicit user approval with 'Yes' or 'Act'",
-                    "Clear specification of the change"
-                ],
+                "confidence_required": 100,
                 "rules": [
                     "Always state explicitly what you are going to do before you do it",
                     "Begin with a failing test that validates the feature requirements",
                     "Break implementation into small, verifiable steps",
-                    "Document design decisions and alternatives considered",
                     "Consider edge cases explicitly before completing implementation",
                     "Return to plan mode if requirements are unclear or new questions arise"
                 ],
-                "error_recovery": {
-                    "if_implementation_blocked": "If implementation is blocked: 1) document specific obstacles, 2) return to plan mode, 3) suggest alternative approaches"
+                "error_recovery": "If implementation is blocked: 1) document specific obstacles, 2) return to plan mode, 3) suggest alternative approaches"
+            }
+        },
+
+        "documentation": {
+            "general_principles": {
+                "description": "Rules that apply to all documentation",
+                "rules": [
+                    "ALWAYS append new content to the START of documentation files, not the end",
+                    "Use clear, concise language focusing on key information",
+                    "Include timestamps for all entries"
+                ]
+            },
+            "document_types": {
+                "implementation_log": {
+                    "purpose": "Track individual code changes",
+                    "update_frequency": "After EACH accepted code change",
+                    "template": "- {date} {time}: {action} - {concise_summary} [File: {file_link}]"
+                },
+                "decisions": {
+                    "purpose": "Record significant technical decisions with rationale",
+                    "update_frequency": "When making architectural changes or significant implementation decisions",
+                    "template": "## {date}: {decision_title}\n\n### Decision\n{decision}\n\n### Rationale\n{rationale}\n\n### Implementation Details\n{details}\n\n### Consequences\n{consequences}"
+                },
+                "session_summary": {
+                    "purpose": "Summarize major interactions and progress",
+                    "update_frequency": "At the end of each major interaction or coding session",
+                    "template": "## {date}: {session_title}\n\n### Accomplishments\n- {accomplishment1}\n\n### Challenges\n- {challenge1}\n\n### Next Steps\n- {next_step1}"
+                },
+                "task_list": {
+                    "purpose": "Track project tasks and their status",
+                    "update_frequency": "When adding new tasks or completing existing ones",
+                    "template": "- [ ] {task_description} (Added: {date})"
+                },
+                "status_updates": {
+                    "purpose": "Provide periodic project status summaries",
+                    "update_frequency": "Weekly or at major milestones",
+                    "template": "## Week of {date} (Update {number})\n\n### Current Status\n{status}\n\n### Key Accomplishments\n- {accomplishment1}\n\n### Challenges & Solutions\n- {challenge1}\n\n### Next Steps\n- {next_step1}"
+                },
+                "project_overview": {
+                    "purpose": "Provide high-level project description",
+                    "update_frequency": "When significant architectural changes occur",
+                    "sections": ["Description", "Core Functionality", "Technical Architecture", "Dependencies"]
                 }
             }
         },
-        "technical_guidelines": {
-            "jax": {
-                "description": "Consolidated JAX programming rules",
+
+        "code_standards": {
+            "description": "Unified standards for high-quality, readable code",
+            "structure": {
+                "description": "Rules for code organization and structure",
                 "rules": [
-                    "Never use dynamic Python slicing (arr[start:stop]) where start/stop depend on non-static function inputs",
-                    "Use vmap instead of manually writing out loops",
-                    "Ensure you're using the latest version of JAX"
+                    "Function Shape: Limit functions to 15-20 lines doing one thing well with a clear purpose",
+                    "Nesting: Maximum 2-3 levels of indentation - extract to helper functions when deeper",
+                    "Abstraction: Maintain consistent abstraction level within a function or code block",
+                    "Organization: Group related functions together, ordered from high-level to low-level implementation details"
                 ]
             },
-            "code_quality": {
-                "description": "Standards for code quality",
+            "style": {
+                "description": "Rules for code readability and style",
                 "rules": [
-                    "Write self-documenting code with clear variable names",
-                    "Include meaningful docstrings for all functions",
-                    "Group related functionality"
+                    "Naming: Use intention-revealing names that explain purpose, not implementation",
+                    "Cognitive Load: Keep variable lifespans short and visible within their usage context",
+                    "Documentation: Include meaningful docstrings explaining 'why' not 'what' for non-obvious code",
+                    "Visual Clarity: Use consistent spacing and formatting to create visual patterns"
                 ]
+            },
+            "patterns": {
+                "description": "Rules for implementation patterns and approaches",
+                "rules": [
+                    "Simplicity: Prefer explicit, straightforward approaches over clever optimizations",
+                    "Refactoring Triggers: Consider refactoring when nesting exceeds 3 levels, function exceeds 20 lines, or variable usage spans many screens",
+                    "Quality Check: Ask 'Could a new developer understand this in under 30 seconds?'"
+                ]
+            },
+            "language_specific": {
+                "jax": {
+                    "description": "JAX-specific programming rules",
+                    "rules": [
+                        "Never use dynamic Python slicing (arr[start:stop]) where start/stop depend on non-static function inputs",
+                        "Use vmap instead of manually writing out loops",
+                        "Ensure you're using the latest version of JAX"
+                    ]
+                }
             }
         },
-        "documentation_requirements": {
-            "description": "Documentation standards across all modes",
-            "templates": {
-                "implementation_log": "- {date} {time}: {action} - {concise_summary} [File: {file_link}]",
-                "meeting_notes": "## Meeting {date} {time}\n\n### Goals\n- {goal1}\n\n### Decisions\n- {decision1}\n\n### Action Items\n- {action1}",
-                "task_update": "- [ ] {task_description} (Added: {date})"
-            },
-            "rules": [
-                "ALWAYS append new content to the START of documentation files, not the end",
-                "Update implementation_log.md after any code changes with timestamp and concise summary",
-                "When transitioning from plan to action mode, create a new timestamped section in meeting_notes.md",
-                "When transitioning from plan to action mode, update task_list.md and check for conflicts",
-                "Create periodic (weekly) project status summaries in .notes/status_updates.md",
-                "Document key technical decisions with rationale in .notes/decisions.md"
-            ]
-        },
-        "continuity_management": {
-            "description": "Ensuring project continuity across sessions",
-            "rules": [
-                "Begin each session with 'Current status: {brief_status}. Next priority: {next_task}. Why: {why_this_task}. [Confidence: {confidence}%]'",
-                "End each session with a summary of progress and open questions",
-                "Maintain a 'blocking issues' section in task_list.md",
-                "Update project_overview.md when significant architectural changes occur"
-            ]
-        },
+
         "task_management": {
             "description": "Rules for managing tasks and tracking progress",
             "rules": [
                 "NEVER mark a parent task as completed [x] if it has any uncompleted subtasks [ ]",
                 "Only mark a task as completed when ALL its subtasks are completed",
                 "When creating task hierarchies, ensure parent tasks accurately reflect the status of all subtasks",
-                "Regularly review task list to ensure consistency between parent and subtask completion status",
+                "Maintain a 'blocking issues' section in task_list.md",
                 "When updating task status, always check parent-child relationships"
             ]
         }

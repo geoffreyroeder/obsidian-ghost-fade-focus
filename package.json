@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "rollup --config rollup.config.js -w",
     "build": "rollup --config rollup.config.js --environment BUILD:production",
-    "test": "jest"
+    "test": "NODE_OPTIONS=--no-warnings jest"
+  },
+  "scriptNotes": {
+    "test": "NODE_OPTIONS=--no-warnings suppresses deprecation warnings from dependencies, only affects testing environment"
   },
   "keywords": [
     "focus",
@@ -33,6 +36,10 @@
     "tslib": "^2.4.0",
     "typescript": "^5.0.0"
   },
+  "dependencyNotes": {
+    "jest-environment-jsdom": "Provides browser-like environment for tests",
+    "ts-jest": "TypeScript support for Jest"
+  },
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "jsdom",
@@ -52,5 +59,13 @@
         "isolatedModules": true
       }]
     }
+  },
+  "jestNotes": {
+    "preset": "TypeScript configuration for Jest",
+    "testEnvironment": "Uses jsdom to simulate DOM environment for testing",
+    "moduleNameMapper": "Maps import statements to mock implementations",
+    "testMatch": "Pattern to find test files",
+    "collectCoverageFrom": "Files to include in coverage reports",
+    "transform.isolatedModules": "Improves performance by disabling type checking during tests"
   }
 }

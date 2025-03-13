@@ -1,6 +1,9 @@
 # Task List
 
 ## Completed
+- [x] Add explanatory comments to package.json
+- [x] Fix TypeScript configuration with esModuleInterop flag
+- [x] Implement comprehensive code readability improvements
 - [x] Consider adding a debug mode for diagnostics
 - [x] Verify behavior with real-world documents in Obsidian
 - [x] Fix inconsistency in distance calculation for lines above the cursor
