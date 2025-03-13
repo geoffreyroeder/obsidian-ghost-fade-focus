@@ -49,7 +49,7 @@ export class GhostFocusSettingTab extends PluginSettingTab {
           .onChange(async (value) => {
             this.plugin.settings.enabled = value;
             await this.plugin.saveSettings();
-            this.plugin.updateCSSBasedOnSettings();
+            this.plugin.cssVariablesBasedOnEnabledState();
           })
       );
 

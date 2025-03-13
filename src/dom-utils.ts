@@ -219,7 +219,7 @@ export function applyGutterFading(
  * This extracts the relevant line numbers and their distances,
  * including empty lines which get the distance of the nearest non-empty line.
  */
-function createLineNumberDistanceMap(
+export function createLineNumberDistanceMap(
   visibleContext: VisibleLinesContext,
   effectiveDistances: Map<number, number>,
   settings: GhostFocusSettings

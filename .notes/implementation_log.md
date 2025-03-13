@@ -1,4 +1,59 @@
 # Implementation Log
+
+- 2024-03-14 18:45: Fixed - Updated method reference in settings.ts to fix build error [File: src/settings.ts]
+  
+  Fixed build error by updating the method reference in settings.ts from `updateCSSBasedOnSettings()` to `cssVariablesBasedOnEnabledState()`. During the refactoring process, the method was renamed in main.ts but the reference in settings.ts wasn't updated, causing a TypeScript error during build.
+  
+  The error was:
+  ```
+  Plugin typescript: @rollup/plugin-typescript TS2339: Property 'updateCSSBasedOnSettings' does not exist on type 'GhostFocusPlugin'.
+  ```
+  
+  This change ensures that the settings tab correctly calls the method that updates CSS variables when settings are changed. The build now completes successfully.
+
+- 2024-03-14 17:30: Fixed - Implemented CodeMirror gutter API for line number fading [File: src/main.ts]
+  
+  Fixed issue where line number fading wasn't applied at startup by using CodeMirror's built-in gutter API instead of direct DOM manipulation. Created a custom `FadedLineMarker` class that applies the appropriate fading classes to line numbers based on their distance from the cursor.
+  
+  Key changes:
+  - Added a custom gutter extension that replaces the default line numbers
+  - Created a `FadedLineMarker` class that applies fading classes
+  - Used the `lineMarker` function to calculate distances and apply fading
+  - Ensured empty lines get the same fading as the nearest non-empty line
+  - Removed dependency on DOM being fully rendered before applying fading
+
+- 2024-03-14 15:30: Fixed - Enhanced line number fading for empty lines [File: src/dom-utils.ts]
+  
+  Modified the `createLineNumberDistanceMap` function to include empty lines in the distance calculation. Added a new helper function `findNearestNonEmptyLineDistance` that determines the distance to the nearest non-empty line for empty lines.
+  
+  This fixes the issue where line number fading would cut off at empty lines. Now, empty lines receive the same fading effect as the nearest non-empty line, creating a smooth transition throughout the document.
+
+- 2024-03-14 12:30: Fixed - Updated method reference in settings.ts to match renamed method [File: src/settings.ts]
+  - Changed reference from `cssVariablesBasedOnEnabledState` to `updateCSSBasedOnSettings`
+  - Resolved build error: "Property 'cssVariablesBasedOnEnabledState' does not exist on type 'GhostFocusPlugin'"
+  - Ensured consistency between method names after refactoring 
+
+- 2024-03-14 11:30: Updated - Refactored test files to use the new module structure [File: src/test/*]
+  - Updated imports in all test files to reference the proper modules:
+    - line-number-fading.test.ts now imports from dom-utils.ts
+    - empty-line-handling.test.ts now imports from document-analysis.ts
+    - decoration-logic.test.ts now imports from both decorations.ts and document-analysis.ts
+    - css-variables.test.ts now imports from dom-utils.ts
+    - utils.test.ts now imports from document-analysis.ts
+    - main.test.ts updated with appropriate imports
+  - Maintained test coverage while adapting to the new modular architecture
+
+- 2024-03-13 16:30: Fixed - Removed named exports from main.ts to resolve Rollup build error [File: src/main.ts]
+  
+  Fixed Rollup build error "default was specified for output.exports, but entry module has the following exports: applyLineNumberFading, default, removeExistingFadeClasses". Ensured that main.ts only has a default export by moving line number fading implementation to utils.ts.
+  
+  This change:
+  1. Resolves the Rollup build error related to named exports
+  2. Improves architectural separation of concerns with proper testing support
+  3. Complies with code standards from .cursorrules, such as direct implementation testing, proper function exports, and avoidance of logic duplication
+  
+  Line number fading is now properly implemented with tests that directly import the implementation functions from utils.ts.
+
 -- 2024-03-14 12:30: Fixed - Updated method reference in settings.ts to match renamed method [File: src/settings.ts]
   - Changed reference from `cssVariablesBasedOnEnabledState` to `updateCSSBasedOnSettings`
   - Resolved build error: "Property 'cssVariablesBasedOnEnabledState' does not exist on type 'GhostFocusPlugin'"
@@ -72,9 +127,4 @@
     - document-analysis.ts: Line analysis and distance calculations
     - dom-utils.ts: DOM manipulation and styling
     - debug.ts: Debugging utilities
-- 2024-03-14 15:30: Fixed - Line number fading for empty lines [File: src/dom-utils.ts]
-  - Modified `createLineNumberDistanceMap` to include empty lines in the distance calculation
-  - Added `findNearestNonEmptyLineDistance` helper function to find the nearest non-empty line's distance
-  - Fixed issue where line number fading would cut off at empty lines
-  - Empty lines now get the same fading as the nearest non-empty line, creating a smooth transition
 
