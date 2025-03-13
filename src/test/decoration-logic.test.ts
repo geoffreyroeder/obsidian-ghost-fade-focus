@@ -2,7 +2,15 @@
  * Tests for the decoration logic that ignores empty lines
  */
 
-import { isEmptyLine } from '../utils';
+import { describe, expect, test } from '@jest/globals';
+import { 
+  createFadedLineDecorations
+} from '../decorations';
+
+import {
+  calculateEffectiveDistances,
+  isEmptyLine
+} from '../document-analysis';
 
 // Implementation that directly mirrors the actual algorithm in main.ts
 function calculateEffectiveDistance(lines: string[], cursorLine: number): Map<number, number> {

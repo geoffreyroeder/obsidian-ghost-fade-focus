@@ -2,6 +2,11 @@
  * Tests for CSS variable management functions
  */
 
+import { describe, expect, test, beforeEach, afterEach } from '@jest/globals';
+import { 
+  applyCSSVariables, 
+  removeCSSVariables 
+} from '../dom-utils';  // Updated import
 import { DEFAULT_SETTINGS } from '../settings';
 
 // Mock document.documentElement

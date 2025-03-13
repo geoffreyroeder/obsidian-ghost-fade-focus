@@ -1,5 +1,30 @@
 # Implementation Log
-
+-- 2024-03-14 12:30: Fixed - Updated method reference in settings.ts to match renamed method [File: src/settings.ts]
+  - Changed reference from `cssVariablesBasedOnEnabledState` to `updateCSSBasedOnSettings`
+  - Resolved build error: "Property 'cssVariablesBasedOnEnabledState' does not exist on type 'GhostFocusPlugin'"
+  - Ensured consistency between method names after refactoring 2024-03-14 11:30: Updated - Refactored test files to use the new module structure [File: src/test/*]
+  - Updated imports in all test files to reference the proper modules:
+    - line-number-fading.test.ts now imports from dom-utils.ts
+    - empty-line-handling.test.ts now imports from document-analysis.ts
+    - decoration-logic.test.ts now imports from both decorations.ts and document-analysis.ts
+    - css-variables.test.ts now imports from dom-utils.ts
+    - utils.test.ts now imports from document-analysis.ts
+    - main.test.ts updated with appropriate imports
+  - Maintained test coverage while adapting to the new modular architecture
+- 2024-03-14 11:00: Refactored - Comprehensive module restructuring for improved organization [File: src/*]
+  - Split monolithic main.ts into focused modules with clear responsibilities:
+    - document-analysis.ts: Line extraction and distance calculations
+    - decorations.ts: View plugin and decoration management
+    - dom-utils.ts: DOM interactions and styling
+    - debug.ts: Debugging utilities
+  - Created clean interfaces between modules with explicit dependencies
+  - Maintained backward compatibility through re-exports in utils.ts
+  - Simplified main.ts to focus on plugin lifecycle and coordination
+- 2024-03-14 12:00: Fixed - Cleaned up main.ts to remove code duplication and resolve linter errors [File: src/main.ts]
+  - Commented out all code that was previously moved to specialized modules
+  - Kept only the core plugin class and lifecycle methods
+  - Resolved import conflicts with moved functionality
+  - Added documentation notes to indicate where code was relocated
 - 2024-03-14 10:15: Refactored - Comprehensive readability improvements to main.ts following code standards [File: src/main.ts]
   - Restructured code with clear section organization (view plugin, decorations, line number fading, etc.)
   - Broke down large functions into smaller, focused ones with single responsibilities
@@ -40,3 +65,4 @@
 - 2024-03-10 23:00: Comprehensive code readability improvements - Refactored code with better types, function decomposition, reduced nesting, improved naming, and added documentation [Files: src/main.ts, src/utils.ts]
 - 2024-03-10 23:30: Fixed TypeScript configuration - Added esModuleInterop flag to tsconfig.json to resolve ts-jest import compatibility warnings [File: tsconfig.json]
 - 2024-03-10 23:45: Added explanatory comments - Added detailed comments to package.json to explain configuration flags and test setup [File: package.json]
+

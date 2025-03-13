@@ -1,8 +1,9 @@
+// Test file for utilities functionality
+import { describe, expect, test } from '@jest/globals';
+import { isEmptyLine } from '../document-analysis';  // Updated import
+
 // Define the function directly to avoid importing from main.ts
-// This completely isolates the test from Obsidian dependencies
-function isEmptyLine(text: string): boolean {
-  return text.trim() === "";
-}
+
 
 describe("Utility Functions", () => {
   describe("isEmptyLine", () => {

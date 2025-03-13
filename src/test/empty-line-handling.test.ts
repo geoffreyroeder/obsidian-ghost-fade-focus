@@ -2,7 +2,11 @@
  * Tests for empty line handling in decoration logic
  */
 
-import { isEmptyLine, calculateEffectiveDistances } from '../utils';
+import { describe, expect, test } from '@jest/globals';
+import { 
+  isEmptyLine, 
+  calculateEffectiveDistances 
+} from '../document-analysis';
 
 describe('Empty Line Handling', () => {
   describe('calculateEffectiveDistances', () => {

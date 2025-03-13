@@ -3,7 +3,8 @@
  */
 
 import { EditorView } from '@codemirror/view';
-import { applyLineNumberFading } from '../utils';
+import { applyLineNumberFading, removeExistingFadeClasses } from '../dom-utils';
+import { describe, expect, test, beforeEach, jest } from '@jest/globals';
 
 // Mock the DOM elements for line numbers
 function createMockGutterElements(lineNumbers: number[]): HTMLElement[] {
